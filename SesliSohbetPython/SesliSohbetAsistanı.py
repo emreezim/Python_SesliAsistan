@@ -1,0 +1,207 @@
+import random
+import time
+from playsound import playsound
+import speech_recognition as sr
+from gtts import gTTS
+import pyaudio
+import os
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime
+import ArdunioProje
+
+
+r=sr.Recognizer()
+
+class sesliasistan():
+   
+    def seslendirme(self,metin):
+        xtts=gTTS(text=metin,lang="tr")
+        dosya="dosya"+str(random.randint(0,121231231))+".mp3"
+        xtts.save(dosya)
+        playsound(dosya)
+        os.remove(dosya)
+    
+       
+    def ses_kayit(self):
+        with sr.Microphone() as kaynak:
+            print("Sizi dinliyoruz...")
+            listen=r.listen(kaynak)
+            voice=" "
+            
+            try:
+                voice=r.recognize_google(listen,language="tr-TR")
+            except sr.UnknownValueError:
+                self.seslendirme("Ne söylediğinizi anlamadım.Lütfen tekrar söyleyiniz")
+            return voice 
+
+
+
+
+
+    def ses_karisilik(self,gelen_ses):
+        if "selam" in gelen_ses:
+           self.seslendirme("Size de selamlar")
+        elif "merhaba" in gelen_ses:
+           self.seslendirme("Size de merhabalar")
+        elif "nasılsın" in gelen_ses:
+            self.seslendirme("iyiyim siz nasılsınız")
+        elif "nasıl gidiyor" in gelen_ses:
+            self.seslendirme("iyi sizin?")    
+        elif "video aç" in gelen_ses:
+            self.seslendirme("Ne açmamı istersiniz")
+            veri=self.ses_kayit()
+            self.seslendirme("{} Açılıyor".format(veri))
+            time.sleep(1)
+            url="https://youtube.com/search?q={}".format(veri)
+            tarayici=webdriver.Chrome()
+            tarayici.get(url)
+            buton=tarayici.find_element_by_xpath("//*[@id='video-title']/yt-formatted-string").click()
+            time.sleep(100)     
+        elif "google aç" in gelen_ses or "arama yap" in gelen_ses:
+            self.seslendirme("Ne aramamı istersiniz")
+            veri=self.ses_kayit()
+            self.seslendirme("{} için bulduklarım bunlar".format(veri))
+            url="https://www.google.com/search?q={}".format(veri)
+
+            tarayici=webdriver.Chrome()
+            tarayici.get(url)
+            buton=tarayici.find_element_by_xpath("//*[@id='rso']/div[1]/div/div/div/div/div/div/div/div[1]/a/h3").click()
+            
+            time.sleep(300)
+        elif "filmi aç" in gelen_ses:
+            try:
+                    self.seslendirme("Hangi filmi açmamı istersiniz")
+                    veri=self.ses_kayit()
+                    self.seslendirme("{} filmini açıyorum....".format(veri))
+
+                    url="https://www.google.com/search?q={}+izle".format(veri)
+
+                    tarayici=webdriver.Chrome()
+                    tarayici.get(url)
+
+                    buton=tarayici.find_element_by_xpath("//*[@id='kp-wp-tab-TvmWatch']/div[2]/div/div/div/div/div[1]/div/div[1]/div/a/h3")
+                    buton.click()
+                    time.sleep(3)
+      
+             
+                    self.seslendirme("internetten kaynaklı bir hata meydana geldi.lütfen internetinizi kontrol ediniz")
+
+            except:
+                    a=  "//*[@id='kp-wp-tab-TvmWatch']/div[2]/div/div/div/div/div[1]/div/div[1]/div/a/h3"
+        elif "film önerisi yap" in gelen_ses:
+                try:
+                    self.seslendirme("hangi tür film istersinz")
+                    veri=self.ses_kayit()
+                    self.seslendirme("{} türü için bulduğum filmler şunlar...".format(veri))
+                    url="https://www.filmmodu13.com/kategori/{}".format(veri)
+                    tarayici=webdriver.Chrome()
+                    tarayici.get(url)
+                    self.seslendirme("Eğer kararsızsanız size film önerisinde bulunmak istiyorum")
+                    cevap=self.ses_kayit()
+                    print(cevap)
+                    time.sleep(2)
+
+                    if cevap=="Evet":
+                        self.seslendirme("Filminizi hemen getiriyorum....")
+                        rastgele_sayi=random.randint(1,24)
+                        buton=tarayici.find_element_by_xpath("/html/body/main/div[2]/div[{}]/div/a".format(rastgele_sayi))
+                        buton.click()
+                       
+                     
+
+                        self.seslendirme("Keyifli seyirler...")
+                    else:
+                        self.seslendirme("Keyifli seyirler...")
+
+                except:
+                    self.seslendirme("internetten kaynaklı bir hata meydana geldi.lütfen internetinizi kontrol ediniz")
+        
+        
+        elif "hava durumu tahmini" in gelen_ses or "hava durumu" in gelen_ses:
+            
+           try: 
+                self.seslendirme("hangi şehrin hava durumunu istersiniz")
+                cevap=self.ses_kayit()
+
+            
+
+                url="https://www.ntv.com.tr/{}-hava-durumu".format(cevap)
+                request=requests.get(url)
+
+                htlm_icerigi=request.content
+                soup=BeautifulSoup(htlm_icerigi,"html.parser")
+
+                gunduz_sicaklikları=soup.find_all("p",{"class":"hava-durumu--detail-data-item-bottom-temp-max"})
+                gece_sicakliklari=soup.find_all("p",{"class":"hava-durumu--detail-data-item-bottom-temp-min"})
+                hava_durumu=soup.find_all("div",{"class":"container hava-durumu--detail-data-item-bottom-desc"})
+                gun_isimleri = soup.find_all("div", {"class": "daily-report-tab-content-pane-item-date"})
+
+                gunduz=[]
+                gece=[]
+                hava=[] 
+                for x in gunduz_sicaklikları:
+                    x=x.text
+                    gunduz.append(x)
+        
+
+                for y in gece_sicakliklari:
+                    y=y.text
+                    gece.append(y)
+
+                for z in hava_durumu:
+                    z=z.text
+                    hava.append(z)
+                
+                birlestirme="{} için yarinki hava raporları şöyle {} gündüz sıcaklığı {} gece sıcaklığı {}".format(cevap,hava[0],gunduz[0],gece[0])
+
+                self.seslendirme(birlestirme)
+
+           except:
+               self.seslendirme("İstediğiniz Şehre göre hava durumu yok yada İnternetinizde sorun olabilir.İnternetinizi kontrol ediniz")
+"""
+        elif (gelen_ses in "led'i yak"):
+            
+                self.seslendirme("led'inizi hemen yakıyorum")
+                ArdunioProje.led_islemleri(1)
+            
+               
+
+        elif (gelen_ses in "led'i söndür"):
+           try: 
+                self.seslendirme("led'inizi hemen söndürüyorum")     
+                ArdunioProje.led_islemleri(0)
+           except:
+                self.seslendirme("Bir hata meydana geldi")    
+"""
+
+
+
+
+
+
+
+asistan=sesliasistan()
+
+def uyanma_fonksiyonu(metin):
+    if(metin=="hey siri" or metin=="hey google"):
+        asistan.seslendirme("dinliyorum...")
+        cevap=asistan.ses_kayit()
+        if(cevap != ""):
+            asistan.ses_karisilik(cevap)
+
+
+
+
+while True:
+    ses=asistan.ses_kayit()
+
+    if(ses != " "):
+        ses=ses.lower()
+        print(ses)
+        uyanma_fonksiyonu(ses)
+        
+
+   
