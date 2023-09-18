@@ -58,19 +58,28 @@ class sesliasistan():
             url="https://youtube.com/search?q={}".format(veri)
             tarayici=webdriver.Chrome()
             tarayici.get(url)
-            buton=tarayici.find_element_by_xpath("//*[@id='video-title']/yt-formatted-string").click()
+            buton=tarayici.find_element(By.XPATH, "//*[@id='video-title']/yt-formatted-string").click()
+
             time.sleep(100)     
         elif "google aç" in gelen_ses or "arama yap" in gelen_ses:
-            self.seslendirme("Ne aramamı istersiniz")
-            veri=self.ses_kayit()
-            self.seslendirme("{} için bulduklarım bunlar".format(veri))
-            url="https://www.google.com/search?q={}".format(veri)
 
-            tarayici=webdriver.Chrome()
-            tarayici.get(url)
-            buton=tarayici.find_element_by_xpath("//*[@id='rso']/div[1]/div/div/div/div/div/div/div/div[1]/a/h3").click()
-            
-            time.sleep(300)
+            try:
+                self.seslendirme("Ne aramamı istersiniz")
+                veri = self.ses_kayit()
+                self.seslendirme("{} için bulduklarım bunlar".format(veri))
+                url = "https://www.google.com/search?q={}".format(veri)
+
+                tarayici = webdriver.Chrome()
+                tarayici.get(url)
+                buton = tarayici.find_element(By.XPATH,
+                                              "//*[@id='rso']/div[1]/div/div/div/div/div/div/div/div[1]/div/span/a/h3").click()
+
+                time.sleep(300)
+
+
+            except:
+                self.seslendirme("Hata Oluştu")
+
         elif "filmi aç" in gelen_ses:
             try:
                     self.seslendirme("Hangi filmi açmamı istersiniz")
@@ -82,15 +91,16 @@ class sesliasistan():
                     tarayici=webdriver.Chrome()
                     tarayici.get(url)
 
-                    buton=tarayici.find_element_by_xpath("//*[@id='kp-wp-tab-TvmWatch']/div[2]/div/div/div/div/div[1]/div/div[1]/div/a/h3")
-                    buton.click()
+                    buton=tarayici.find_element(By.XPATH,"//*[@id='kp-wp-tab-TvmWatch']/div[2]/div/div/div/div/div[1]/div/div[1]/div/div/span/a/h3").click()
+
                     time.sleep(3)
       
              
-                    self.seslendirme("internetten kaynaklı bir hata meydana geldi.lütfen internetinizi kontrol ediniz")
+
 
             except:
-                    a=  "//*[@id='kp-wp-tab-TvmWatch']/div[2]/div/div/div/div/div[1]/div/div[1]/div/a/h3"
+                self.seslendirme("internetten kaynaklı bir hata meydana geldi.lütfen internetinizi kontrol ediniz")
+                    #a=  "//*[@id='kp-wp-tab-TvmWatch']/div[2]/div/div/div/div/div[1]/div/div[1]/div/a/h3"
         elif "film önerisi yap" in gelen_ses:
                 try:
                     self.seslendirme("hangi tür film istersinz")
@@ -107,8 +117,8 @@ class sesliasistan():
                     if cevap=="Evet":
                         self.seslendirme("Filminizi hemen getiriyorum....")
                         rastgele_sayi=random.randint(1,24)
-                        buton=tarayici.find_element_by_xpath("/html/body/main/div[2]/div[{}]/div/a".format(rastgele_sayi))
-                        buton.click()
+                        buton=tarayici.find_element(By.XPATH,"/html/body/main/div[2]/div[{}]/div/a".format(rastgele_sayi)).click()
+
                        
                      
 
@@ -161,6 +171,23 @@ class sesliasistan():
 
            except:
                self.seslendirme("İstediğiniz Şehre göre hava durumu yok yada İnternetinizde sorun olabilir.İnternetinizi kontrol ediniz")
+
+        elif "Hesap Makinesi Aç" in gelen_ses or "hesap makinesi" in gelen_ses:
+            try:
+
+                self.seslendirme("Hesap Makinesi Açılıyor")
+                os.system(r"D:\ProjeYedeği\HesapMakinesi\HesapMakinesi\HesapMakinesi\HesapMakinesi\HesapMakinesi\bin\Debug\HesapMakinesi.exe")
+
+
+            except:
+                self.seslendirme("Hata Oluştu,Tekrar Deneyiniz")
+
+        elif "hesap makinesini kapat" in gelen_ses:
+            try:
+                os.close()
+
+            except:
+                self.seslendirme("Hata Oluştu,Tekrar Deneyiniz")
 """
         elif (gelen_ses in "led'i yak"):
             
