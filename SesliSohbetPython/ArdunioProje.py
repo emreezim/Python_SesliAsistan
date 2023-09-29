@@ -1,4 +1,4 @@
-from pyfirmata import Arduino
+"""from pyfirmata import Arduino
 import inspect
 
 
@@ -14,4 +14,4 @@ def led_islemleri(deger):
             elif(deger==0):
                 board.digital[7].write(0)
                 board.exit()
-        
+"""

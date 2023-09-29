@@ -9,6 +9,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import requests
 from bs4 import BeautifulSoup
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
+import googletrans
+from googletrans import Translator
 from datetime import datetime
 import ArdunioProje
 
@@ -56,29 +60,24 @@ class sesliasistan():
             self.seslendirme("{} Açılıyor".format(veri))
             time.sleep(1)
             url="https://youtube.com/search?q={}".format(veri)
-            tarayici=webdriver.Chrome()
+            tarayici=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
             tarayici.get(url)
             buton=tarayici.find_element(By.XPATH, "//*[@id='video-title']/yt-formatted-string").click()
 
             time.sleep(100)     
         elif "google aç" in gelen_ses or "arama yap" in gelen_ses:
-
-            try:
                 self.seslendirme("Ne aramamı istersiniz")
                 veri = self.ses_kayit()
+                print("{} için bulduklarım bunlar".format(veri))
                 self.seslendirme("{} için bulduklarım bunlar".format(veri))
+
                 url = "https://www.google.com/search?q={}".format(veri)
 
-                tarayici = webdriver.Chrome()
+                tarayici = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
                 tarayici.get(url)
-                buton = tarayici.find_element(By.XPATH,
-                                              "//*[@id='rso']/div[1]/div/div/div/div/div/div/div/div[1]/div/span/a/h3").click()
-
+                buton = tarayici.find_element(By.XPATH,"//*[@id='rso']/div[1]/div/div/div/div/div/div/div/div[1]/div/span/a/h3").click()
                 time.sleep(300)
-
-
-            except:
-                self.seslendirme("Hata Oluştu")
+                #self.seslendirme("Hata Oluştu")
 
         elif "filmi aç" in gelen_ses:
             try:
@@ -188,6 +187,35 @@ class sesliasistan():
 
             except:
                 self.seslendirme("Hata Oluştu,Tekrar Deneyiniz")
+        elif "çeviri Yap" in gelen_ses or "çeviri" in gelen_ses:
+
+                 self.seslendirme("Çeviri Yapacağınız Kelimeyi Söyleyiniz")
+                 cevap=self.ses_kayit()
+                 print(cevap)
+                 self.seslendirme("Hangi dilde Çeviri yapmak istiyorsunuz")
+                 translanguage=self.ses_kayit()
+
+                 if translanguage=="Türkçe":
+                    result=translate(cevap,Turkish=True)
+                    self.seslendirme("{} kelimesinin çevirisi:{}".format(cevap, result))
+                    print("{} kelimesinin çevirisi:{}".format(cevap, result))
+                 if translanguage=="Almanca":
+                    result = translate(cevap, Germany=True)
+                    self.seslendirme("{} kelimesinin çevirisi:{}".format(cevap, result))
+                    print("{} kelimesinin çevirisi:{}".format(cevap, result))
+                 if translanguage=="İngilizce":
+                    result = translate(cevap,English=True)
+                    self.seslendirme("{} kelimesinin çevirisi:{}".format(cevap, result))
+                    print("{} kelimesinin çevirisi:{}".format(cevap, result))
+
+
+
+
+
+
+
+
+
 """
         elif (gelen_ses in "led'i yak"):
             
@@ -220,8 +248,19 @@ def uyanma_fonksiyonu(metin):
             asistan.ses_karisilik(cevap)
 
 
-
-
+def translate(text, English =False,Germany=False,Turkish=False):
+    translation_dict={}
+    translator=Translator()
+    if Germany==True:
+        result=translator.translate(text,dest='de')
+        translation_dict["Almanca"]= result.text
+    if English==True:
+        result=translator.translate(text,dest='en')
+        translation_dict["İngilizce"]= result.text
+    if Turkish==True:
+        result=translator.translate(text,dest='tr')
+        translation_dict["Türkçe"]= result.text
+    return  translation_dict
 while True:
     ses=asistan.ses_kayit()
 
