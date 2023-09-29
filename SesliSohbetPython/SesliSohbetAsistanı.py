@@ -62,7 +62,7 @@ class sesliasistan():
             url="https://youtube.com/search?q={}".format(veri)
             tarayici=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
             tarayici.get(url)
-            buton=tarayici.find_element(By.XPATH, "//*[@id='video-title']/yt-formatted-string").click()
+            tarayici.find_element(By.XPATH, "//*[@id='video-title']/yt-formatted-string").click()
 
             time.sleep(100)     
         elif "google aç" in gelen_ses or "arama yap" in gelen_ses:
@@ -75,7 +75,7 @@ class sesliasistan():
 
                 tarayici = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
                 tarayici.get(url)
-                buton = tarayici.find_element(By.XPATH,"//*[@id='rso']/div[1]/div/div/div/div/div/div/div/div[1]/div/span/a/h3").click()
+                #tarayici.find_element(By.XPATH,"//*[@id='rso']/div[1]/div/div/table/tbody/tr[3]/td/div/h3/a").click()
                 time.sleep(300)
                 #self.seslendirme("Hata Oluştu")
 
@@ -90,7 +90,7 @@ class sesliasistan():
                     tarayici=webdriver.Chrome()
                     tarayici.get(url)
 
-                    buton=tarayici.find_element(By.XPATH,"//*[@id='kp-wp-tab-TvmWatch']/div[2]/div/div/div/div/div[1]/div/div[1]/div/div/span/a/h3").click()
+                    buton=tarayici.find_element(By.XPATH,"//*[@id='rso']/div[1]/div/div/div/div/div/div/div[1]/div/span/a/h3").click()
 
                     time.sleep(3)
       
