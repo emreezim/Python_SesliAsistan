@@ -15,7 +15,11 @@ import googletrans
 from googletrans import Translator
 from datetime import datetime
 import ArdunioProje
-
+import tkinter as tk
+from tkinter import filedialog
+import tempfile
+import win32api
+import win32print
 
 r=sr.Recognizer()
 
@@ -38,7 +42,7 @@ class sesliasistan():
             try:
                 voice=r.recognize_google(listen,language="tr-TR")
             except sr.UnknownValueError:
-                self.seslendirme("Ne söylediğinizi anlamadım.Lütfen tekrar söyleyiniz")
+                self.seslendirme("Sesinizi Anlayamadım,Lütfen tekrar söyleyiniz")
             return voice 
 
 
@@ -208,6 +212,14 @@ class sesliasistan():
                     self.seslendirme("{} kelimesinin çevirisi:{}".format(cevap, result))
                     print("{} kelimesinin çevirisi:{}".format(cevap, result))
 
+        elif "yaz" in gelen_ses or "yazdırma" in gelen_ses:
+
+            self.seslendirme("Yazdırma işlemi yapıcağınız dosyayı seçiniz.")
+            dosyasec()
+            self.seslendirme("Yazdırma İşlemi Gerçekleştiriliyor")
+
+
+
 
 
 
@@ -247,7 +259,11 @@ def uyanma_fonksiyonu(metin):
         if(cevap != ""):
             asistan.ses_karisilik(cevap)
 
+def dosyasec():
+    filename = tk.filedialog.askopenfilename()
+#C:\\Users\\emre2\\OneDrive\\Desktop\\katalog.pdf
 
+    os.startfile(filename, "printto")
 def translate(text, English =False,Germany=False,Turkish=False):
     translation_dict={}
     translator=Translator()
