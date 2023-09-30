@@ -1,5 +1,7 @@
 import random
 import time
+
+
 from playsound import playsound
 import speech_recognition as sr
 from gtts import gTTS
@@ -10,6 +12,7 @@ from selenium.webdriver.common.by import By
 import requests
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 import googletrans
 from googletrans import Translator
@@ -17,6 +20,12 @@ from datetime import datetime
 import ArdunioProje
 import tkinter as tk
 from tkinter import filedialog
+from selenium.webdriver.common.keys import Keys
+import googlemaps
+import requests
+import pywhatkit as kit
+import phonenumbers
+from phonenumbers import carrier, timezone, geocoder
 import tempfile
 import win32api
 import win32print
@@ -79,30 +88,33 @@ class sesliasistan():
 
                 tarayici = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
                 tarayici.get(url)
-                #tarayici.find_element(By.XPATH,"//*[@id='rso']/div[1]/div/div/table/tbody/tr[3]/td/div/h3/a").click()
+                tarayici.find_element(By.CSS_SELECTOR,"#rso > div:nth-child(1) > div > div > div > div > div > div > div > div.yuRUbf > div > span > a > h3").click()
                 time.sleep(300)
                 #self.seslendirme("Hata Oluştu")
 
         elif "filmi aç" in gelen_ses:
-            try:
+            #try:
                     self.seslendirme("Hangi filmi açmamı istersiniz")
                     veri=self.ses_kayit()
                     self.seslendirme("{} filmini açıyorum....".format(veri))
 
                     url="https://www.google.com/search?q={}+izle".format(veri)
 
-                    tarayici=webdriver.Chrome()
+                    tarayici=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
                     tarayici.get(url)
 
-                    buton=tarayici.find_element(By.XPATH,"//*[@id='rso']/div[1]/div/div/div/div/div/div/div[1]/div/span/a/h3").click()
+                    tarayici.implicitly_wait(5)
+                    buton=tarayici.find_element(By.XPATH,"//*[@id='kp-wp-tab-overview']/div[2]/div/div/div/div/div/div[1]/div/div/span/a/h3").click()
+
+            #//*[@id="kp-wp-tab-overview"]/div[2]/div/div/div/div/div/div[1]/div/div/span/a/h3
 
                     time.sleep(3)
       
              
 
 
-            except:
-                self.seslendirme("internetten kaynaklı bir hata meydana geldi.lütfen internetinizi kontrol ediniz")
+            #except:
+                #self.seslendirme("internetten kaynaklı bir hata meydana geldi.lütfen internetinizi kontrol ediniz")
                     #a=  "//*[@id='kp-wp-tab-TvmWatch']/div[2]/div/div/div/div/div[1]/div/div[1]/div/a/h3"
         elif "film önerisi yap" in gelen_ses:
                 try:
@@ -110,7 +122,7 @@ class sesliasistan():
                     veri=self.ses_kayit()
                     self.seslendirme("{} türü için bulduğum filmler şunlar...".format(veri))
                     url="https://www.filmmodu13.com/kategori/{}".format(veri)
-                    tarayici=webdriver.Chrome()
+                    tarayici=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
                     tarayici.get(url)
                     self.seslendirme("Eğer kararsızsanız size film önerisinde bulunmak istiyorum")
                     cevap=self.ses_kayit()
@@ -217,6 +229,30 @@ class sesliasistan():
             self.seslendirme("Yazdırma işlemi yapıcağınız dosyayı seçiniz.")
             dosyasec()
             self.seslendirme("Yazdırma İşlemi Gerçekleştiriliyor")
+        """elif "harita" in gelen_ses:
+            self.seslendirme("Mesaj Göndereceğiniz Kişiyi Söyleyiniz")
+            name=self.ses_kayit()
+            name=name.title()
+            print(name)
+            self.seslendirme("Göndereceğiniz mesajı söyleyiniz")
+            message=self.ses_kayit()
+            driver=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+            driver.maximize_window()
+
+            kisibul=driver.find_element(By.XPATH,"//span[@title='{}'']".format(name))
+            messageplace=driver.find_element(By.XPATH,'//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p')
+            messageplace.send_keys(message + Keys.ENTER)
+
+            self.seslendirme("Mesajınız Gönderildi")
+            """
+
+            
+
+
+
+
+
+
 
 
 
