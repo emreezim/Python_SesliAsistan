@@ -88,7 +88,8 @@ class sesliasistan():
 
                 tarayici = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
                 tarayici.get(url)
-                tarayici.find_element(By.CSS_SELECTOR,"#rso > div:nth-child(1) > div > div > div > div > div > div > div > div.yuRUbf > div > span > a > h3").click()
+                buton=tarayici.find_element(By.XPATH,"//*[@id='rso']/div[1]/div/div/div/div[1]/div/div/span/a/h3")
+                buton.click()
                 time.sleep(300)
                 #self.seslendirme("Hata Oluştu")
 
@@ -103,13 +104,14 @@ class sesliasistan():
                     tarayici=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
                     tarayici.get(url)
 
-                    tarayici.implicitly_wait(5)
-                    buton=tarayici.find_element(By.XPATH,"//*[@id='kp-wp-tab-overview']/div[2]/div/div/div/div/div/div[1]/div/div/span/a/h3").click()
+
+                    buton=tarayici.find_element(By.XPATH,"//*[@id='kp-wp-tab-TvmWatch']/div[2]/div/div/div/div/div[2]/div/div[1]/div/div/span/a/h3")
+                    buton.click()
 
             #//*[@id="kp-wp-tab-overview"]/div[2]/div/div/div/div/div/div[1]/div/div/span/a/h3
 
                     time.sleep(3)
-      
+
              
 
 
@@ -229,24 +231,35 @@ class sesliasistan():
             self.seslendirme("Yazdırma işlemi yapıcağınız dosyayı seçiniz.")
             dosyasec()
             self.seslendirme("Yazdırma İşlemi Gerçekleştiriliyor")
-        """elif "harita" in gelen_ses:
+        elif "harita" in gelen_ses:
+
+            """
+            print(datetime.now().hour)
+            print(datetime.now().minute)
+            kit.sendwhatmsg_to_group(name,message,datetime.now().hour,datetime.now().minute+1)
+            """
+
             self.seslendirme("Mesaj Göndereceğiniz Kişiyi Söyleyiniz")
             name=self.ses_kayit()
             name=name.title()
             print(name)
             self.seslendirme("Göndereceğiniz mesajı söyleyiniz")
             message=self.ses_kayit()
+            message=message.title()
             driver=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+            driver.get("https://web.whatsapp.com/")
             driver.maximize_window()
-
-            kisibul=driver.find_element(By.XPATH,"//span[@title='{}'']".format(name))
+            print('Karekodu okutunuz')
+            input("Ekran geldiyse enter'a basınız")
+            kisibul=driver.find_element(By.XPATH,"//span[@title='{}']".format(name))
+            kisibul.click()
             messageplace=driver.find_element(By.XPATH,'//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p')
             messageplace.send_keys(message + Keys.ENTER)
 
             self.seslendirme("Mesajınız Gönderildi")
-            """
 
-            
+
+
 
 
 
