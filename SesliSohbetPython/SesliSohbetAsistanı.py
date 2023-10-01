@@ -231,7 +231,7 @@ class sesliasistan():
             self.seslendirme("Yazdırma işlemi yapıcağınız dosyayı seçiniz.")
             dosyasec()
             self.seslendirme("Yazdırma İşlemi Gerçekleştiriliyor")
-        elif "harita" in gelen_ses:
+        elif "mesaj" in gelen_ses:
 
             """
             print(datetime.now().hour)
@@ -255,6 +255,7 @@ class sesliasistan():
             kisibul.click()
             messageplace=driver.find_element(By.XPATH,'//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p')
             messageplace.send_keys(message + Keys.ENTER)
+
 
             self.seslendirme("Mesajınız Gönderildi")
 
