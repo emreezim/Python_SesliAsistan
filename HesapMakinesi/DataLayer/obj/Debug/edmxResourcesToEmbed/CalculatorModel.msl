@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="CalculatorDataModelStoreContainer" CdmEntityContainer="CalculatorDataEntities">
+    <EntitySetMapping Name="CalculatorHistory">
+      <EntityTypeMapping TypeName="CalculatorDataModel.CalculatorHistory">
+        <MappingFragment StoreEntitySet="CalculatorHistory">
+          <ScalarProperty Name="Procces" ColumnName="Procces" />
+          <ScalarProperty Name="Equals" ColumnName="Equals" />
+          <ScalarProperty Name="History" ColumnName="History" />
+          <ScalarProperty Name="ProccessId" ColumnName="ProccessId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="BringData" FunctionName="CalculatorDataModel.Store.BringData">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="CalculatorDataModel.BringData_Result">
+          <ScalarProperty Name="İşlem" ColumnName="İşlem" />
+          <ScalarProperty Name="Sonuc" ColumnName="Sonuc" />
+          <ScalarProperty Name="Tarih" ColumnName="Tarih" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="DelData" FunctionName="CalculatorDataModel.Store.DelData" />
+    <FunctionImportMapping FunctionImportName="SaveData" FunctionName="CalculatorDataModel.Store.SaveData" />
+  </EntityContainerMapping>
+</Mapping>

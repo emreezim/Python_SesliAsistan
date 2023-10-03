@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="CalculatorDataModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="CalculatorHistory">
+    <Key>
+      <PropertyRef Name="ProccessId" />
+    </Key>
+    <Property Name="Procces" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="Equals" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="History" Type="date" Nullable="false" />
+    <Property Name="ProccessId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+  </EntityType>
+  <Function Name="BringData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="DelData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="SaveData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="equals" Type="varchar" Mode="In" />
+    <Parameter Name="procces" Type="varchar" Mode="In" />
+    <Parameter Name="history" Type="date" Mode="In" />
+  </Function>
+  <EntityContainer Name="CalculatorDataModelStoreContainer">
+    <EntitySet Name="CalculatorHistory" EntityType="Self.CalculatorHistory" Schema="dbo" store:Type="Tables" />
+  </EntityContainer>
+</Schema>

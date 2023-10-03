@@ -1,6 +1,6 @@
 import random
 import time
-
+import fnmatch
 
 from playsound import playsound
 import speech_recognition as sr
@@ -193,9 +193,7 @@ class sesliasistan():
             try:
 
                 self.seslendirme("Hesap Makinesi Açılıyor")
-                os.system(r"D:\ProjeYedeği\HesapMakinesi\HesapMakinesi\HesapMakinesi\HesapMakinesi\HesapMakinesi\bin\Debug\HesapMakinesi.exe")
-
-
+                os.system(r"C:\Users\emre2\OneDrive\Desktop\Python_SesliAsistan-main\HesapMakinesi\HesapMakinesi\bin\Debug\HesapMakinesi.exe")
             except:
                 self.seslendirme("Hata Oluştu,Tekrar Deneyiniz")
 
@@ -227,10 +225,27 @@ class sesliasistan():
                     print("{} kelimesinin çevirisi:{}".format(cevap, result))
 
         elif "yaz" in gelen_ses or "yazdırma" in gelen_ses:
+            try:
+                self.seslendirme("Yazdırma işlemi yapıcağınız dosyayı söyleyiniz.")
+                filename=self.ses_kayit()
+                print(filename)
+                filepath=r"C:\Users\emre2\OneDrive\Desktop\Resimler"
 
-            self.seslendirme("Yazdırma işlemi yapıcağınız dosyayı seçiniz.")
-            dosyasec()
-            self.seslendirme("Yazdırma İşlemi Gerçekleştiriliyor")
+                with os.scandir(filepath) as tarama:
+                     for belge in tarama:
+                         if fnmatch.fnmatch(belge.name,"{}*".format(filename)):
+
+                             if fnmatch.fnmatch(belge.name, "*.jpg"):
+                                 os.startfile(r"C:\Users\emre2\OneDrive\Desktop\Python_SesliAsistan-main\Resimler\{}.jpg".format(filename), "printto")
+                             elif fnmatch.fnmatch(belge.name,"*.pdf"):
+                                 os.startfile(r"C:\Users\emre2\OneDrive\Desktop\Python_SesliAsistan-main\Resimler\{}.pdf".format(filename), "printto")
+
+                         self.seslendirme("Yazdırma İşlemi Gerçekleştiriliyor")
+            except:
+                self.seslendirme("Bir HATA Oluştu Lütfen tekrar deneyiniz")
+
+
+
         elif "mesaj" in gelen_ses:
 
             """
@@ -309,11 +324,9 @@ def uyanma_fonksiyonu(metin):
         if(cevap != ""):
             asistan.ses_karisilik(cevap)
 
-def dosyasec():
-    filename = tk.filedialog.askopenfilename()
-#C:\\Users\\emre2\\OneDrive\\Desktop\\katalog.pdf
 
-    os.startfile(filename, "printto")
+
+
 def translate(text, English =False,Germany=False,Turkish=False):
     translation_dict={}
     translator=Translator()
