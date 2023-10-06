@@ -29,9 +29,10 @@ from phonenumbers import carrier, timezone, geocoder
 import tempfile
 import win32api
 import win32print
-
+import sqlite3
 r=sr.Recognizer()
-
+connect = sqlite3.connect("EngWord.db")
+imlec = connect.cursor()
 class sesliasistan():
    
     def seslendirme(self,metin):
@@ -125,7 +126,7 @@ class sesliasistan():
 
                 tarayici = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
                 tarayici.get(url)
-                buton=tarayici.find_element(By.XPATH,"//*[@id='rso']/div[1]/div/div/div/div[1]/div/div/span/a/h3")
+                buton=tarayici.find_element(By.XPATH,"//*[@id='rso']/div[1]/div/div/div/div/div/div/div/div[1]/div/span/a/h3")
                 buton.click()
                 time.sleep(300)
                 #self.seslendirme("Hata Oluştu")
@@ -310,6 +311,50 @@ class sesliasistan():
 
 
             self.seslendirme("Mesajınız Gönderildi")
+
+        elif "kelime kaydet" in gelen_ses:
+
+            imlec.execute("CREATE TABLE IF NOT EXISTS WordInf (WordId INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT,engMean TEXT NOT NULL,turkishMean TEXT NOT NULL)")
+            self.seslendirme("Kelimenin İngilizcesini Söyleyiniz")
+            engMean=self.ses_kayit()
+            print(engMean)
+            self.seslendirme("Kelimenin Türkçesini Söyleyiniz")
+            turkishMean=self.ses_kayit()
+            print(turkishMean)
+
+            imlec.execute("Insert Into WordInf (engMean,turkishMean) values ('{}','{}')".format(engMean,turkishMean))
+            connect.commit()
+            self.seslendirme("Kaydedildi")
+
+
+        elif "kelimeleri sor" in gelen_ses:
+            imlec.execute("Select MAX(WordId) from WordInf")
+            result=imlec.fetchall()
+
+            for b in result:
+                maxsayi=b[0]
+
+            for i in range(1,maxsayi+1):
+                komut = "SELECT engMean,turkishMean FROM WordInf where WordId = {}".format(i)
+                imlec.execute(komut)
+                veri = imlec.fetchone()
+                self.seslendirme("{} kelimesini türkçesi nedir?".format(veri[0]))
+                cevap = self.ses_kayit()
+                if cevap == veri[1]:
+                    self.seslendirme("Doğru")
+                else:
+                    self.seslendirme("Yanlış")
+                    break
+
+
+
+
+
+
+
+
+
+
 
 
 
