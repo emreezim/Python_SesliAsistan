@@ -23,6 +23,9 @@ from tkinter import filedialog
 from selenium.webdriver.common.keys import Keys
 import googlemaps
 import requests
+import cv2
+import dlib
+import face_recognition
 import pywhatkit as kit
 import phonenumbers
 from phonenumbers import carrier, timezone, geocoder
@@ -59,38 +62,50 @@ class sesliasistan():
 
     def faceDef(self):
 
-        vid = cv2.VideoCapture(0)
-        yuz_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-        img = cv2.imread(r"WIN_20231005_22_04_35_Pro.jpg")
-        x = 0
-        y = 0
-        w = 0
-        h = 0
 
-        while (True):
-            ret, frame = vid.read()
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            gray2 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            yuzler2 = yuz_cascade.detectMultiScale(gray2, 1.3, 5)
-            yuzler = yuz_cascade.detectMultiScale(gray, 1.3, 5)
 
-            print(yuzler)
-            # x   y   w   h
-            # 225  67 196 196
-            # 187 142 212 212
+        detector = dlib.get_frontal_face_detector()
+        emre = face_recognition.load_image_file("emre.jpg")
+        emre_enc = face_recognition.face_encodings(emre)[0]
+        tulay = face_recognition.load_image_file("tulay.jpg")
+        tulay_enc = face_recognition.face_encodings(tulay)[0]
 
-            for (x, y, w, h) in yuzler:
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (85, 255, 0), 3)
+        cap = cv2.VideoCapture(0)
 
-            if x == 200 in yuzler:
-                print("sadsad")
+        while True:
+            ret, frame = cap.read()
+
+            face_loc = []
+            faces = detector(frame)
+            for face in faces:
+                x = face.left()
+                y = face.top()
+                w = face.right()
+                h = face.bottom()
+                face_loc.append((y, w, h, x))
+
+            # face_loc=face_recognition.face_locations(frame)
+            face_encoding = face_recognition.face_encodings(frame, face_loc)
+            i = 0
+
+            for face in face_encoding:
+
+                y, w, h, x = face_loc[i]
+                sonuc = face_recognition.compare_faces([emre_enc], face)
+                sonuc1 = face_recognition.compare_faces([tulay_enc], face)
+                if sonuc[0] == True:
+                    cv2.rectangle(frame, (x, y), (w, h), (255, 0, 0), 2)
+                    cv2.putText(frame, "Emre", (x, h + 35), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
+                elif sonuc1[0] == True:
+                    cv2.rectangle(frame, (x, y), (w, h), (255, 0, 0), 2)
+                    cv2.putText(frame, "Tulay", (x, h + 35), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
+                else:
+                    cv2.rectangle(frame, (x, y), (w, h), (255, 0, 0), 2)
+                    cv2.putText(frame, "yabanci", (x, h + 35), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
+            cv2.imshow("1", frame)
+            if cv2.waitKey(10) & 0xFF == ord("q"):
                 break
-
-            cv2.imshow('title', frame)
-
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-        vid.release()
+        cap.release()
         cv2.destroyAllWindows()
 
     def ses_karisilik(self,gelen_ses):
