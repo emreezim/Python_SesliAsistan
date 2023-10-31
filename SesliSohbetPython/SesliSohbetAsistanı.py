@@ -16,7 +16,6 @@ from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 import googletrans
 from googletrans import Translator
-from datetime import datetime
 import ArdunioProje
 import tkinter as tk
 from tkinter import filedialog
@@ -33,6 +32,8 @@ import tempfile
 import win32api
 import win32print
 import sqlite3
+
+
 r=sr.Recognizer()
 connect = sqlite3.connect("EngWord.db")
 imlec = connect.cursor()
@@ -117,36 +118,38 @@ class sesliasistan():
             self.seslendirme("iyiyim siz nasılsınız")
         elif "nasıl gidiyor" in gelen_ses:
             self.seslendirme("iyi sizin?")
-        elif "tamam" in gelen_ses:
+        elif "yüz tanıma" in gelen_ses:
             print("asdsadsa")
             self.faceDef()
-        elif "video aç" in gelen_ses:
-            self.seslendirme("Ne açmamı istersiniz")
-            veri=self.ses_kayit()
-            self.seslendirme("{} Açılıyor".format(veri))
+        elif gelen_ses.find("video") > -1:
+            veri=gelen_ses.split(" ")
+            self.seslendirme("{} videosu Açılıyor".format(veri[0]))
             time.sleep(1)
-            url="https://youtube.com/search?q={}".format(veri)
+            url="https://youtube.com/search?q={}".format(veri[0])
             tarayici=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
             tarayici.get(url)
             tarayici.find_element(By.XPATH, "//*[@id='video-title']/yt-formatted-string").click()
 
             time.sleep(100)     
-        elif "google aç" in gelen_ses or "arama yap" in gelen_ses:
-                self.seslendirme("Ne aramamı istersiniz")
-                veri = self.ses_kayit()
-                print("{} için bulduklarım bunlar".format(veri))
-                self.seslendirme("{} için bulduklarım bunlar".format(veri))
+        elif gelen_ses.find("arama")>-1 or gelen_ses.find("Arama") > -1:
 
-                url = "https://www.google.com/search?q={}".format(veri)
+            try:
+                #self.seslendirme("Ne aramamı istersiniz")
+                veri = gelen_ses.split(" ")
+                print("{} için bulduklarım bunlar".format(veri[0]))
+                self.seslendirme("{} için bulduklarım bunlar".format(veri[0]))
+
+                url = "https://www.google.com/search?q={}".format(veri[0])
 
                 tarayici = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
                 tarayici.get(url)
                 buton=tarayici.find_element(By.XPATH,"//*[@id='rso']/div[1]/div/div/div/div/div/div/div/div[1]/div/span/a/h3")
                 buton.click()
                 time.sleep(300)
-                #self.seslendirme("Hata Oluştu")
+            except:
+                self.seslendirme("Hata Oluştu")
 
-        elif "filmi aç" in gelen_ses:
+        elif gelen_ses.find("film")>-1:
             #try:
                     self.seslendirme("Hangi filmi açmamı istersiniz")
                     veri=self.ses_kayit()
@@ -169,9 +172,9 @@ class sesliasistan():
 
 
             #except:
-                #self.seslendirme("internetten kaynaklı bir hata meydana geldi.lütfen internetinizi kontrol ediniz")
+                    #self.seslendirme("internetten kaynaklı bir hata meydana geldi.lütfen internetinizi kontrol ediniz")
                     #a=  "//*[@id='kp-wp-tab-TvmWatch']/div[2]/div/div/div/div/div[1]/div/div[1]/div/a/h3"
-        elif "film önerisi yap" in gelen_ses:
+        elif gelen_ses.find("film önerisi")>-1:
                 try:
                     self.seslendirme("hangi tür film istersinz")
                     veri=self.ses_kayit()
@@ -200,15 +203,15 @@ class sesliasistan():
                     self.seslendirme("internetten kaynaklı bir hata meydana geldi.lütfen internetinizi kontrol ediniz")
         
         
-        elif "hava durumu tahmini" in gelen_ses or "hava durumu" in gelen_ses:
+        elif  gelen_ses.find("hava durumu")>-1:
             
            try: 
-                self.seslendirme("hangi şehrin hava durumunu istersiniz")
-                cevap=self.ses_kayit()
+                #self.seslendirme("hangi şehrin hava durumunu istersiniz")
+                cevap=gelen_ses.split(" ")
 
             
 
-                url="https://www.ntv.com.tr/{}-hava-durumu".format(cevap)
+                url="https://www.ntv.com.tr/{}-hava-durumu".format(cevap[0])
                 request=requests.get(url)
 
                 htlm_icerigi=request.content
@@ -235,14 +238,14 @@ class sesliasistan():
                     z=z.text
                     hava.append(z)
                 
-                birlestirme="{} için yarinki hava raporları şöyle {} gündüz sıcaklığı {} gece sıcaklığı {}".format(cevap,hava[0],gunduz[0],gece[0])
+                birlestirme="{} için yarinki hava raporları şöyle {} gündüz sıcaklığı {} gece sıcaklığı {}".format(cevap[0],hava[0],gunduz[0],gece[0])
 
                 self.seslendirme(birlestirme)
 
            except:
                self.seslendirme("İstediğiniz Şehre göre hava durumu yok yada İnternetinizde sorun olabilir.İnternetinizi kontrol ediniz")
 
-        elif "Hesap Makinesi Aç" in gelen_ses or "hesap makinesi" in gelen_ses:
+        elif gelen_ses.find("hesap yapmak") >-1:
             try:
 
                 self.seslendirme("Hesap Makinesi Açılıyor")
@@ -256,28 +259,25 @@ class sesliasistan():
 
             except:
                 self.seslendirme("Hata Oluştu,Tekrar Deneyiniz")
-        elif "çeviri Yap" in gelen_ses or "çeviri" in gelen_ses:
+        elif gelen_ses.find("çevir")>-1:
+                 cevap=gelen_ses.split(" ")
+                 #self.seslendirme("Hangi dilde Çeviri yapmak istiyorsunuz")
+                 #translanguage=self.ses_kayit()
 
-                 self.seslendirme("Çeviri Yapacağınız Kelimeyi Söyleyiniz")
-                 cevap=self.ses_kayit()
-                 print(cevap)
-                 self.seslendirme("Hangi dilde Çeviri yapmak istiyorsunuz")
-                 translanguage=self.ses_kayit()
+                 if cevap[2].find("Türkçe")>-1:
+                    result=translate(cevap[0],Turkish=True)
+                    self.seslendirme("{} kelimesinin çevirisi:{}".format(cevap[0], result))
+                    print("{} kelimesinin çevirisi:{}".format(cevap[0], result))
+                 if cevap[2].find("Almanca")>-1:
+                    result = translate(cevap[0], Germany=True)
+                    self.seslendirme("{} kelimesinin çevirisi:{}".format(cevap[0], result))
+                    print("{} kelimesinin çevirisi:{}".format(cevap[0], result))
+                 if cevap[2].find("İngilizce")>-1:
+                    result = translate(cevap[0],English=True)
+                    self.seslendirme("{} kelimesinin çevirisi:{}".format(cevap[0], result))
+                    print("{} kelimesinin çevirisi:{}".format(cevap[0], result))
 
-                 if translanguage=="Türkçe":
-                    result=translate(cevap,Turkish=True)
-                    self.seslendirme("{} kelimesinin çevirisi:{}".format(cevap, result))
-                    print("{} kelimesinin çevirisi:{}".format(cevap, result))
-                 if translanguage=="Almanca":
-                    result = translate(cevap, Germany=True)
-                    self.seslendirme("{} kelimesinin çevirisi:{}".format(cevap, result))
-                    print("{} kelimesinin çevirisi:{}".format(cevap, result))
-                 if translanguage=="İngilizce":
-                    result = translate(cevap,English=True)
-                    self.seslendirme("{} kelimesinin çevirisi:{}".format(cevap, result))
-                    print("{} kelimesinin çevirisi:{}".format(cevap, result))
-
-        elif "yaz" in gelen_ses or "yazdırma" in gelen_ses:
+        elif gelen_ses.find("yazdırma")>-1 or gelen_ses.find("Yazdırma") > -1:
             try:
                 self.seslendirme("Yazdırma işlemi yapıcağınız dosyayı söyleyiniz.")
                 filename=self.ses_kayit()
@@ -299,7 +299,7 @@ class sesliasistan():
 
 
 
-        elif "mesaj" in gelen_ses:
+        elif gelen_ses.find("mesaj") >-1 :
 
             """
             print(datetime.now().hour)
@@ -327,7 +327,7 @@ class sesliasistan():
 
             self.seslendirme("Mesajınız Gönderildi")
 
-        elif "kelime kaydet" in gelen_ses:
+        elif gelen_ses.find("kaydet")>-1 or gelen_ses.find("Kaydet")>-1:
 
             imlec.execute("CREATE TABLE IF NOT EXISTS WordInf (WordId INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT,engMean TEXT NOT NULL,turkishMean TEXT NOT NULL)")
             self.seslendirme("Kelimenin İngilizcesini Söyleyiniz")
@@ -342,7 +342,7 @@ class sesliasistan():
             self.seslendirme("Kaydedildi")
 
 
-        elif "kelimeleri sor" in gelen_ses:
+        elif gelen_ses.find("yarışma"):
             imlec.execute("Select MAX(WordId) from WordInf")
             result=imlec.fetchall()
 
