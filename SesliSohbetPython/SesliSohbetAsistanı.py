@@ -1,6 +1,8 @@
 import random
 import time
 import fnmatch
+import imgdeneme
+import weather
 import cv2
 from playsound import playsound
 import speech_recognition as sr
@@ -9,13 +11,14 @@ import pyaudio
 import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import requests
-from bs4 import BeautifulSoup
+
+
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 import googletrans
 from googletrans import Translator
+
 import ArdunioProje
 import tkinter as tk
 from tkinter import filedialog
@@ -63,8 +66,8 @@ class sesliasistan():
 
     def faceDef(self):
 
-
-
+        imgdeneme.yuztanima()
+        """
         detector = dlib.get_frontal_face_detector()
         emre = face_recognition.load_image_file("emre.jpg")
         emre_enc = face_recognition.face_encodings(emre)[0]
@@ -108,7 +111,7 @@ class sesliasistan():
                 break
         cap.release()
         cv2.destroyAllWindows()
-
+"""
     def ses_karisilik(self,gelen_ses):
         if "selam" in gelen_ses:
            self.seslendirme("Size de selamlar")
@@ -133,21 +136,23 @@ class sesliasistan():
             time.sleep(100)     
         elif gelen_ses.find("arama")>-1 or gelen_ses.find("Arama") > -1:
 
-            try:
-                #self.seslendirme("Ne aramamı istersiniz")
-                veri = gelen_ses.split(" ")
-                print("{} için bulduklarım bunlar".format(veri[0]))
-                self.seslendirme("{} için bulduklarım bunlar".format(veri[0]))
 
-                url = "https://www.google.com/search?q={}".format(veri[0])
+                try:
+                    veri = gelen_ses.split(" ")
+                    print("{} için bulduklarım bunlar".format(veri[0]))
+                    self.seslendirme("{} için bulduklarım bunlar".format(veri[0]))
 
-                tarayici = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-                tarayici.get(url)
-                buton=tarayici.find_element(By.XPATH,"//*[@id='rso']/div[1]/div/div/div/div/div/div/div/div[1]/div/span/a/h3")
-                buton.click()
-                time.sleep(300)
-            except:
-                self.seslendirme("Hata Oluştu")
+                    url = "https://www.google.com/search?q={}".format(veri[0])
+
+                    tarayici = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                    tarayici.get(url)
+                    buton=tarayici.find_element(By.XPATH,"//*[@id='rso']/div[1]/div/div/div/div/div/div/div/div[1]/div/span/a/h3")
+                    buton.click()
+                    time.sleep(300)
+                except:
+                    self.seslendirme("Hata Oluştu")
+
+
 
         elif gelen_ses.find("film")>-1:
             #try:
@@ -205,42 +210,10 @@ class sesliasistan():
         
         elif  gelen_ses.find("hava durumu")>-1:
             
-           try: 
-                #self.seslendirme("hangi şehrin hava durumunu istersiniz")
-                cevap=gelen_ses.split(" ")
+           try:
+               cevap = gelen_ses.split(" ")
 
-            
-
-                url="https://www.ntv.com.tr/{}-hava-durumu".format(cevap[0])
-                request=requests.get(url)
-
-                htlm_icerigi=request.content
-                soup=BeautifulSoup(htlm_icerigi,"html.parser")
-
-                gunduz_sicaklikları=soup.find_all("p",{"class":"hava-durumu--detail-data-item-bottom-temp-max"})
-                gece_sicakliklari=soup.find_all("p",{"class":"hava-durumu--detail-data-item-bottom-temp-min"})
-                hava_durumu=soup.find_all("div",{"class":"container hava-durumu--detail-data-item-bottom-desc"})
-                gun_isimleri = soup.find_all("div", {"class": "daily-report-tab-content-pane-item-date"})
-
-                gunduz=[]
-                gece=[]
-                hava=[] 
-                for x in gunduz_sicaklikları:
-                    x=x.text
-                    gunduz.append(x)
-        
-
-                for y in gece_sicakliklari:
-                    y=y.text
-                    gece.append(y)
-
-                for z in hava_durumu:
-                    z=z.text
-                    hava.append(z)
-                
-                birlestirme="{} için yarinki hava raporları şöyle {} gündüz sıcaklığı {} gece sıcaklığı {}".format(cevap[0],hava[0],gunduz[0],gece[0])
-
-                self.seslendirme(birlestirme)
+               self.seslendirme(weather.weatherfonk(cevap))
 
            except:
                self.seslendirme("İstediğiniz Şehre göre hava durumu yok yada İnternetinizde sorun olabilir.İnternetinizi kontrol ediniz")
@@ -342,7 +315,7 @@ class sesliasistan():
             self.seslendirme("Kaydedildi")
 
 
-        elif gelen_ses.find("yarışma"):
+        elif gelen_ses.find("sor"):
             imlec.execute("Select MAX(WordId) from WordInf")
             result=imlec.fetchall()
 
@@ -353,7 +326,7 @@ class sesliasistan():
                 komut = "SELECT engMean,turkishMean FROM WordInf where WordId = {}".format(i)
                 imlec.execute(komut)
                 veri = imlec.fetchone()
-                self.seslendirme("{} kelimesini türkçesi nedir?".format(veri[0]))
+                self.seslendirme("{} kelimesinin türkçesi nedir?".format(veri[0]))
                 cevap = self.ses_kayit()
                 if cevap == veri[1]:
                     self.seslendirme("Doğru")
